@@ -120,7 +120,10 @@ class FrankaInterface:
         self._gripper_buffer_idx = 0
 
         # control frequency
-        self._control_freq = control_freq
+        if "CONTROL" in general_cfg and "POLICY_RATE" in general_cfg.CONTROL:
+            self._control_freq = general_cfg.CONTROL.POLICY_RATE
+        else:
+            self._control_freq = control_freq
         self._control_interval = 1.0 / self._control_freq
 
         # state frequency

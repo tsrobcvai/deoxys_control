@@ -1,7 +1,24 @@
 # Installation
 ```bash
-./InstallPackage # 0.18.0 if franka sys is >= 5.9.0
+./InstallPackage # 0.20.0 if franka sys is >= 5.9.0
 # for nuc
+# manually compile Pinocchio
+git clone --recursive https://github.com/stack-of-tasks/pinocchio.git
+cd pinocchio
+
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=$HOME/local/pinocchio-min \
+  -DBUILD_PYTHON_INTERFACE=OFF \
+  -DBUILD_WITH_CASADI_SUPPORT=OFF \
+  -DBUILD_WITH_SDF_SUPPORT=OFF \
+  -DBUILD_WITH_COLLISION_SUPPORT=OFF \
+  -DBUILD_WITH_AUTODIFF_SUPPORT=OFF \
+  -DBUILD_TESTING=OFF
+
+cmake --build build -j
+cmake --install build
+
 make -j build_franka=1
 # for pc
 make -j build_deoxys=1

@@ -121,4 +121,6 @@ message FrankaRobotStateMessage {
   repeated double current_robot_poses_frames = 47;
 
   uint64 frame = 48;
+
+  repeated double mass_matrix = 49;
 }

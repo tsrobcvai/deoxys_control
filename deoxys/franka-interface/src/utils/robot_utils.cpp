@@ -247,9 +247,11 @@ void StatePublisher::StartPublishing() {
     int count = 0;
     while (running_) {
       franka::RobotState current_robot_state;
+      std::array<double, 49> current_mass_matrix;
 
       if (state_.mutex.try_lock()) {
         current_robot_state = state_.robot_state;
+        current_mass_matrix = state_.mass_matrix;
         state_.mutex.unlock();
       } else {
         continue;
@@ -257,6 +259,10 @@ void StatePublisher::StartPublishing() {
       FrankaRobotStateMessage robot_state_msg;
       robot_state_utils_.LoadRobotStateToMsg(current_robot_state,
                                              robot_state_msg);
+      
+      robot_state_msg.mutable_mass_matrix()->Add(
+          current_mass_matrix.begin(), current_mass_matrix.end());
+
       robot_state_msg.set_frame(count);
       count++;
       std::string msg_str;
@@ -278,6 +284,7 @@ void StatePublisher::UpdateNewState(const franka::RobotState &robot_state,
                                     const franka::Model *robot_model) {
   if (state_.mutex.try_lock()) {
     state_.robot_state = robot_state;
+    state_.mass_matrix = robot_model->mass(robot_state);
     int n_frame = 0;
     for (franka::Frame frame = franka::Frame::kJoint1;
          frame <= franka::Frame::kEndEffector; frame++) {

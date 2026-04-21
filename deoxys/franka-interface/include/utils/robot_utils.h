@@ -45,6 +45,7 @@ protected:
   struct {
     franka::RobotState robot_state;
     std::array<double, 144> current_robot_frames;
+    std::array<double, 49> mass_matrix;
     std::mutex mutex;
   } state_;
   zmq_utils::ZMQPublisher zmq_publisher_;

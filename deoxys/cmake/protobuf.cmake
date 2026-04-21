@@ -119,7 +119,7 @@ if(PROTOC_EXE_FOUND) # this is based on the function in FindProtobuf included
     # create the library target
     add_library(${TARGET_NAME} ${_proto_srcs})
     target_link_libraries(${TARGET_NAME} PUBLIC ${ARGS_PROTO_LIB})
-    target_include_directories(${TARGET_NAME} PUBLIC "${INCLUDE_DIR}")
+    target_include_directories(${TARGET_NAME} BEFORE PUBLIC "${INCLUDE_DIR}" ${Protobuf_INCLUDE_DIRS})
     target_compile_options(${TARGET_NAME}
                            PRIVATE
                            "-Wno-everything"

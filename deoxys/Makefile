@@ -53,7 +53,7 @@ cleanlogs:
 	(cd logs; rm -rf *.txt *.vraw *.?log *.log *.idx html/*.html)
 
 cmake: CMakeLists.txt
-	mkdir -p $(buildDir) && cd $(buildDir) && cmake -DCMAKE_BUILD_TYPE=$(cmakeBuildType) -DCMAKE_INSTALL_PREFIX=$(current_dir) -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=$(current_dir)  -DBUILD_DEOXYS=$(build_deoxys) -DBUILD_FRANKA=$(build_franka)  ..
+	mkdir -p $(buildDir) && cd $(buildDir) && cmake -DCMAKE_BUILD_TYPE=$(cmakeBuildType) -DCMAKE_INSTALL_PREFIX=$(current_dir) -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=$(current_dir) -DBUILD_DEOXYS=$(build_deoxys) -DBUILD_FRANKA=$(build_franka) -DBOOST_ROOT=$$CONDA_PREFIX -DBoost_NO_SYSTEM_PATHS=ON -Dpinocchio_DIR=$$HOME/local/pinocchio-min/lib/cmake/pinocchio -DProtobuf_PROTOC_EXECUTABLE=$$CONDA_PREFIX/bin/protoc -DPROTOC_EXE=$$CONDA_PREFIX/bin/protoc -DProtobuf_INCLUDE_DIR=$$CONDA_PREFIX/include -DProtobuf_LIBRARY=$$CONDA_PREFIX/lib/libprotobuf.so ..
 
 docs: cmake
 	$(MAKE) --no-print-directory -C $(buildDir) docs

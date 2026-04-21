@@ -56,3 +56,4 @@ sudo ldconfig # refresh shared library cache.
 sudo apt install libreadline-dev -y
 sudo apt install bzip2 -y
 sudo apt install libmotif-dev libglfw3 -y
+sudo apt-get install libeigen3-dev

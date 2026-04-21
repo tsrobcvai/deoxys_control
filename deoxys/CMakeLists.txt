@@ -6,7 +6,7 @@ project (deoxys
   LANGUAGES CXX
   )
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -25,6 +25,8 @@ add_compile_options(-Wall -Wextra)
 
 message("${_GLIBCXX_USE_CXX11_ABI}")
 find_package(Protobuf REQUIRED)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L$ENV{CONDA_PREFIX}/lib -Wl,-rpath,$ENV{CONDA_PREFIX}/lib")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -L$ENV{CONDA_PREFIX}/lib -Wl,-rpath,$ENV{CONDA_PREFIX}/lib")
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/protobuf.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/libfranka/cmake/FindEigen3.cmake)
@@ -56,7 +58,7 @@ if (BUILD_FRANKA)
   add_proto_cc_library(shared_protobuf
     NAMESPACE ${PROTO_NAMESPACE}
     PROTO_FILES ${FRANKA_PROTO_FILES}
-    PROTO_LIB protobuf)
+    PROTO_LIB ${Protobuf_LIBRARIES})
   set(BUILD_TESTS OFF CACHE BOOL "Turn off libfranka tests")
   set(BUILD_EXAMPLES OFF CACHE BOOL "Turn off libfranka examples")
   find_package(Eigen3 REQUIRED)
@@ -74,7 +76,8 @@ if (BUILD_FRANKA)
   include_directories(zmqpp/src)
   include_directories(franka-interface/include)
 
-  set(FRANKA_LIBS Eigen3::Eigen3 Franka::Franka Threads::Threads zmqpp yaml-cpp spdlog)
+  find_package(pinocchio REQUIRED)
+  set(FRANKA_LIBS pinocchio::pinocchio pinocchio::pinocchio_parsers Eigen3::Eigen3 Franka::Franka Threads::Threads zmqpp yaml-cpp spdlog)
 
   # Add your new controller files here
   set (CONTROLLERS

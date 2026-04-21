@@ -1,13 +1,41 @@
 # Installation
 ```bash
-conda create -n deoxys python=3.9
-conda activate deoxys
-./InstallPackage # 0.20.0 if franka sys is >= 5.9.0
+./InstallPackage # 0.18.0 if franka sys is >= 5.9.0
 # for nuc
 make -j build_franka=1
 # for pc
 make -j build_deoxys=1
+conda create -n deoxys python=3.9
+conda activate deoxys
 pip install -U -r requirements.txt
+
+# if pinocchio has issue, we may do:
+cd ~
+git clone https://github.com/stack-of-tasks/pinocchio.git
+cd pinocchio
+
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=$HOME/local/pinocchio-cpp \
+  -DBUILD_PYTHON_INTERFACE=OFF \
+  -DBUILD_WITH_CASADI_SUPPORT=OFF \
+  -DBUILD_WITH_SDF_SUPPORT=OFF
+
+cmake --build build -j
+cmake --install build
+
+cd ~/Projects/deoxys_control/deoxys
+rm -rf build
+
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=/home/nuc1/Projects/deoxys_control/deoxys \
+  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/home/nuc1/Projects/deoxys_control/deoxys \
+  -DBUILD_DEOXYS=0 \
+  -DBUILD_FRANKA=1 \
+  -Dpinocchio_DIR=$HOME/local/pinocchio-cpp/lib/cmake/pinocchio
+
+cmake --build build -j
 ```
 
 

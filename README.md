@@ -1,3 +1,16 @@
+# Installation
+```bash
+conda create -n deoxys python=3.9
+conda activate deoxys
+./InstallPackage # 0.20.0 if franka sys is >= 5.9.0
+# for nuc
+make -j build_franka=1
+# for pc
+make -j build_deoxys=1
+pip install -U -r requirements.txt
+```
+
+
 <p align="center">
 <img src="./deoxys_github_logo.png">
 </p>

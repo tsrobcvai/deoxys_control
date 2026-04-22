@@ -122,5 +122,6 @@ message FrankaRobotStateMessage {
 
   uint64 frame = 48;
 
-  repeated double mass_matrix = 49;
+    repeated double mass_matrix = 49;
+    repeated double O_Jac_EE = 50;
 }

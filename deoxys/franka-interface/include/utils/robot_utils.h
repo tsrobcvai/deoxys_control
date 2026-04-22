@@ -46,6 +46,7 @@ protected:
     franka::RobotState robot_state;
     std::array<double, 144> current_robot_frames;
     std::array<double, 49> mass_matrix;
+    std::array<double, 42> jacobian;
     std::mutex mutex;
   } state_;
   zmq_utils::ZMQPublisher zmq_publisher_;

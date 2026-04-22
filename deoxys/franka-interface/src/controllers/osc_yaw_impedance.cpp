@@ -76,7 +76,17 @@ bool OSCYawImpedanceController::ParseMessage(const FrankaControlMessage &msg) {
   residual_mass_vec_ << Eigen::Map<const Eigen::Matrix<double, 7, 1>>(
       residual_mass_array.data());
 
-  disable_inertial_decoupling_ = control_msg_.config().disable_inertial_decoupling();
+  bool new_disable = control_msg_.config().disable_inertial_decoupling();
+  static bool first_time_print = true;
+  if (first_time_print || new_disable != disable_inertial_decoupling_) {
+    if (new_disable) {
+      std::cout << "[Deoxys] OSC Yaw Controller: Inertial decoupling is DISABLED." << std::endl;
+    } else {
+      std::cout << "[Deoxys] OSC Yaw Controller: Inertial decoupling is ENABLED." << std::endl;
+    }
+    first_time_print = false;
+  }
+  disable_inertial_decoupling_ = new_disable;
   this->state_estimator_ptr_->ParseMessage(msg.state_estimator_msg());
 
   return true;

@@ -248,10 +248,12 @@ void StatePublisher::StartPublishing() {
     while (running_) {
       franka::RobotState current_robot_state;
       std::array<double, 49> current_mass_matrix;
+      std::array<double, 42> current_jacobian;
 
       if (state_.mutex.try_lock()) {
         current_robot_state = state_.robot_state;
         current_mass_matrix = state_.mass_matrix;
+        current_jacobian = state_.jacobian;
         state_.mutex.unlock();
       } else {
         continue;
@@ -262,6 +264,8 @@ void StatePublisher::StartPublishing() {
       
       robot_state_msg.mutable_mass_matrix()->Add(
           current_mass_matrix.begin(), current_mass_matrix.end());
+      robot_state_msg.mutable_o_jac_ee()->Add(
+          current_jacobian.begin(), current_jacobian.end());
 
       robot_state_msg.set_frame(count);
       count++;
@@ -285,6 +289,7 @@ void StatePublisher::UpdateNewState(const franka::RobotState &robot_state,
   if (state_.mutex.try_lock()) {
     state_.robot_state = robot_state;
     state_.mass_matrix = robot_model->mass(robot_state);
+    state_.jacobian = robot_model->zeroJacobian(franka::Frame::kEndEffector, robot_state);
     int n_frame = 0;
     for (franka::Frame frame = franka::Frame::kJoint1;
          frame <= franka::Frame::kEndEffector; frame++) {

@@ -51,6 +51,7 @@ message FrankaStateEstimatorMessage {
 message FrankaOSCControllerConfig {
   repeated double residual_mass_vec =
       1; // The manual residual mass matrix to add on the internal mass matrix
+  bool disable_inertial_decoupling = 2; // Flag to disable inertial decoupling (default false)
 }
 
 // Franka Gripper control messages

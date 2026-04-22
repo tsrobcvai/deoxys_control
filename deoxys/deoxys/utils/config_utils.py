@@ -172,6 +172,9 @@ def verify_controller_config(controller_cfg: dict, use_default=True):
             field_missing = True
         else:
             assert len(controller_cfg.residual_mass_vec) == 7
+        # Disable inertial decoupling
+        if not check_attr(controller_cfg, "disable_inertial_decoupling"):
+            controller_cfg["disable_inertial_decoupling"] = False
         # Action scale for OSC controllers
         if not check_attr(controller_cfg, "action_scale"):
             controller_cfg["action_scale"] = {"translation": 0.05, "rotation": 1.0}

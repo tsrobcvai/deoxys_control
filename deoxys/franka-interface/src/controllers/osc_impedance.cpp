@@ -67,6 +67,8 @@ bool OSCImpedanceController::ParseMessage(const FrankaControlMessage &msg) {
   residual_mass_vec_ << Eigen::Map<const Eigen::Matrix<double, 7, 1>>(
       residual_mass_array.data());
 
+  disable_inertial_decoupling_ = control_msg_.config().disable_inertial_decoupling();
+
   this->state_estimator_ptr_->ParseMessage(msg.state_estimator_msg());
 
   return true;
@@ -208,12 +210,19 @@ std::array<double, 7> OSCImpedanceController::Step(
   ori_error =
       ori_error.unaryExpr([](double x) { return (abs(x) < 5e-3) ? 0. : x; });
 
-  tau_d << jacobian_pos.transpose() *
-                   (Lambda_pos *
-                    (Kp_p * pos_error - Kd_p * (jacobian_pos * current_dq))) +
-               jacobian_ori.transpose() *
-                   (Lambda_ori *
-                    (Kp_r * ori_error - Kd_r * (jacobian_ori * current_dq)));
+  if (disable_inertial_decoupling_) {
+    tau_d << jacobian_pos.transpose() *
+                     (Kp_p * pos_error - Kd_p * (jacobian_pos * current_dq)) +
+                 jacobian_ori.transpose() *
+                     (Kp_r * ori_error - Kd_r * (jacobian_ori * current_dq));
+  } else {
+    tau_d << jacobian_pos.transpose() *
+                     (Lambda_pos *
+                      (Kp_p * pos_error - Kd_p * (jacobian_pos * current_dq))) +
+                 jacobian_ori.transpose() *
+                     (Lambda_ori *
+                      (Kp_r * ori_error - Kd_r * (jacobian_ori * current_dq)));
+  }
 
   // nullspace control
   tau_d << tau_d + Nullspace * (static_q_task_ - current_q);

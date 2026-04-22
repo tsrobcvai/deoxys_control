@@ -18,6 +18,7 @@ protected:
   Eigen::Vector3d prev_goal_pos_EE_in_base_frame;
 
   Eigen::Matrix<double, 7, 1> residual_mass_vec_;
+  bool disable_inertial_decoupling_;
 
 public:
   OSCPositionImpedanceController();

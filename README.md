@@ -1,5 +1,7 @@
 # Installation
+
 ```bash
+cd deoxys
 ./InstallPackage # 0.20.0 if franka sys is >= 5.9.0
 # for nuc
 # manually compile Pinocchio
@@ -25,64 +27,18 @@ make -j build_deoxys=1
 conda create -n deoxys python=3.9
 conda activate deoxys
 pip install -U -r requirements.txt
-
-# if pinocchio has issue, we may do:
-cd ~
-git clone https://github.com/stack-of-tasks/pinocchio.git
-cd pinocchio
-
-cmake -S . -B build \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=$HOME/local/pinocchio-cpp \
-  -DBUILD_PYTHON_INTERFACE=OFF \
-  -DBUILD_WITH_CASADI_SUPPORT=OFF \
-  -DBUILD_WITH_SDF_SUPPORT=OFF
-
-cmake --build build -j
-cmake --install build
-
-cd ~/Projects/deoxys_control/deoxys
-rm -rf build
-
-cmake -S . -B build \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=/home/nuc1/Projects/deoxys_control/deoxys \
-  -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/home/nuc1/Projects/deoxys_control/deoxys \
-  -DBUILD_DEOXYS=0 \
-  -DBUILD_FRANKA=1 \
-  -Dpinocchio_DIR=$HOME/local/pinocchio-cpp/lib/cmake/pinocchio
-
-cmake --build build -j
 ```
 
 
-<p align="center">
-<img src="./deoxys_github_logo.png">
-</p>
-
-<p align="center">
-<a href="https://github.com/UT-Austin-RPL/deoxys_control/actions">
-<img alt="Tests Passing" src="https://github.com/anuraghazra/github-readme-stats/workflows/Test/badge.svg" />
-</a>
-<a href="https://github.com/UT-Austin-RPL/deoxys_control/graphs/contributors">
-<img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/UT-Austin-RPL/deoxys_control" />
-</a>
-<a href="https://github.com/UT-Austin-RPL/deoxys_control/issues">
-<img alt="Issues" src="https://img.shields.io/github/issues/UT-Austin-RPL/deoxys_control?color=0088ff" />
-</a>
 
 
-[**[Documentation]**](https://zhuyifengzju.github.io/deoxys_docs/html/index.html) &ensp; 
+
+**[[Documentation]](https://zhuyifengzju.github.io/deoxys_docs/html/index.html)** &ensp; 
 
 Deoxys is a modular, real-time controller library for Franka Emika Panda arm, aiming to facilitate a wide range of robot learning research. Deoxys comes with a user-friendly python interface and real-time controller implementation in C++. If you are a [robosuite](https://github.com/ARISE-Initiative/robosuite) user, Deoxys APIs provide seamless transfer 
 from you simulation codebase to real robot experiments!
 
-
-
-
-https://user-images.githubusercontent.com/21077484/206338997-8dbaa128-dc63-4911-84ca-64d80a05673f.mp4
-
-
+[https://user-images.githubusercontent.com/21077484/206338997-8dbaa128-dc63-4911-84ca-64d80a05673f.mp4](https://user-images.githubusercontent.com/21077484/206338997-8dbaa128-dc63-4911-84ca-64d80a05673f.mp4)
 
 ## Cite our codebase
 
@@ -98,10 +54,10 @@ If you use this codebase for your research projects, please cite our codebase ba
 }
 ```
 
-
 # Installation of codebase
 
 Overall, the installation has three parts:
+
 1. Install dependencies by running `InstallPackage`
 2. Compile desktop-side codebase (Python)
 3. Compile NUC-side codebase (C++)
@@ -110,27 +66,29 @@ Here are the details. For more information, please refer to the [Codebase Instal
 
 Clone this repo to the robot workspace directory on Desktop computer (e.g. `/home/USERNAME/robot-control-ws`)
 
-``` shell
+```shell
 cd deoxys_control/deoxys
 ```
 
 ## Install dependencies
 
 Run the `InstallPackage` file to install necessary packages.
-``` shell
+
+```shell
 ./InstallPackage
 ```
-
 
 ## Deoxys - Desktop
 
 Make sure that you are in your python virtual environment before
 	building this.
-``` shell
+
+```shell
 make -j build_deoxys=1
 ```
 
 And install all the python dependencies (feel free to add pull requests if anything is missing) from `deoxys_control/requirements.txt`, by doing:
+
 ```shell
 pip install -U -r requirements.txt
 ```
@@ -140,16 +98,17 @@ pip install -U -r requirements.txt
 Franka Interface is the part which is supposed to run on NUC. Run this 
 command in directory `deoxys_control/deoxys/` on Intel NUC. 
 
-``` shell
+```shell
 make -j build_franka=1
 ```
 
 ## A laundry list of pointers:
-   - [How to turn on/off the robot](https://ut-austin-rpl.github.io/deoxys-docs/html/tutorials/running_robots.html)
-   - [How to install spacemouse](https://ut-austin-rpl.github.io/deoxys-docs/html/tutorials/using_teleoperation_devices.html)
-   - [How to set up the RTOS](https://ut-austin-rpl.github.io/deoxys-docs/html/installation/system_prerequisite.html)
-   - [How to record and replay a trajectory](https://ut-austin-rpl.github.io/deoxys-docs/html/tutorials/record_and_replay.html)
-   - [How to write a simple motor program](https://ut-austin-rpl.github.io/deoxys-docs/html/tutorials/handcrafting_motor_program.html)
+
+- [How to turn on/off the robot](https://ut-austin-rpl.github.io/deoxys-docs/html/tutorials/running_robots.html)
+- [How to install spacemouse](https://ut-austin-rpl.github.io/deoxys-docs/html/tutorials/using_teleoperation_devices.html)
+- [How to set up the RTOS](https://ut-austin-rpl.github.io/deoxys-docs/html/installation/system_prerequisite.html)
+- [How to record and replay a trajectory](https://ut-austin-rpl.github.io/deoxys-docs/html/tutorials/record_and_replay.html)
+- [How to write a simple motor program](https://ut-austin-rpl.github.io/deoxys-docs/html/tutorials/handcrafting_motor_program.html)
 
 # Control the robot
 
@@ -159,7 +118,7 @@ Here is a quick guide to run `Deoxys`.
 
 Under `deoxys_control/deoxys`,  run
 
-``` shell
+```shell
 python examples/run_deoxys_with_space_mouse.py 
 ```
 
@@ -173,11 +132,11 @@ You might also check and change the PC / NUC names [here](https://github.com/UT-
 Under `deoxys_control/deoxys`, run two commands. One for real-time control of the arm, one for non
 real-time control of the gripper.
 
-``` shell
+```shell
 bin/franka-interface config/charmander.yml
 ```
 
-``` shell
+```shell
 bin/gripper-interface config/charmander.yml
 ```
 

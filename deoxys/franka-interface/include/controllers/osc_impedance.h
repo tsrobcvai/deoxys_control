@@ -17,6 +17,8 @@ protected:
   bool disable_inertial_decoupling_;
 
   Eigen::Matrix<double, 7, 1> static_q_task_;
+  double kp_null_;
+  double kd_null_;
   Eigen::Array<double, 7, 1> joint_max_;
   Eigen::Array<double, 7, 1> joint_min_;
   Eigen::Array<double, 7, 1> avoidance_weights_;

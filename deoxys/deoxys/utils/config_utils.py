@@ -112,7 +112,7 @@ def get_default_controller_config(controller_type: str) -> EasyDict:
 
 
 def check_attr(cfg, attr_key):
-    return hasattr(cfg, attr_key) and cfg[attr_key] is not None
+    return attr_key in cfg and cfg[attr_key] is not None
 
 
 def verify_controller_config(controller_cfg: dict, use_default=True):
@@ -175,6 +175,18 @@ def verify_controller_config(controller_cfg: dict, use_default=True):
         # Disable inertial decoupling
         if not check_attr(controller_cfg, "disable_inertial_decoupling"):
             controller_cfg["disable_inertial_decoupling"] = False
+        # Nullspace control parameters are required because hidden defaults make
+        # sim-to-real OSC comparisons ambiguous.
+        assert check_attr(
+            controller_cfg, "kp_null"
+        ), "OSC controller config must specify kp_null"
+        assert check_attr(
+            controller_cfg, "kd_null"
+        ), "OSC controller config must specify kd_null"
+        assert check_attr(
+            controller_cfg, "null_target"
+        ), "OSC controller config must specify null_target"
+        assert len(controller_cfg.null_target) == 7
         # Action scale for OSC controllers
         if not check_attr(controller_cfg, "action_scale"):
             controller_cfg["action_scale"] = {"translation": 0.05, "rotation": 1.0}

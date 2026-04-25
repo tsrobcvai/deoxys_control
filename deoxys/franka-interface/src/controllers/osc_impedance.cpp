@@ -3,6 +3,7 @@
 #include <atomic>
 #include <chrono>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 
@@ -52,9 +53,19 @@ bool OSCImpedanceController::ParseMessage(const FrankaControlMessage &msg) {
   Kd_p << Kp_p.cwiseSqrt() * 2.0;
   Kd_r << Kp_r.cwiseSqrt() * 2.0;
 
-  static_q_task_ << 0.09017809387254755, -0.9824203501652151,
-      0.030509718397568178, -2.694229634937343, 0.057700675144720104,
-      1.860298714876101, 0.8713759453244422;
+  if (control_msg_.config().null_target().size() != 7) {
+    throw std::invalid_argument(
+        "OSC controller config must specify null_target with 7 values");
+  }
+  std::vector<double> null_target_array;
+  null_target_array.reserve(control_msg_.config().null_target().size());
+  for (double q_i : control_msg_.config().null_target()) {
+    null_target_array.push_back(q_i);
+  }
+  static_q_task_ << Eigen::Map<const Eigen::Matrix<double, 7, 1>>(
+      null_target_array.data());
+  kp_null_ = control_msg_.config().kp_null();
+  kd_null_ = control_msg_.config().kd_null();
   joint_max_ << 2.8978, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 2.8973;
   joint_min_ << -2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973;
   avoidance_weights_ << 1., 1., 1., 1., 1., 10., 10.;
@@ -235,7 +246,8 @@ std::array<double, 7> OSCImpedanceController::Step(
   }
 
   // nullspace control
-  tau_d << tau_d + Nullspace * (static_q_task_ - current_q);
+  tau_d << tau_d + Nullspace * (kp_null_ * (static_q_task_ - current_q) -
+                                kd_null_ * current_dq);
 
   // Add joint avoidance potential
   Eigen::Matrix<double, 7, 1> avoidance_force;

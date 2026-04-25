@@ -5,6 +5,7 @@
 #include <atomic>
 #include <chrono>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 
@@ -64,9 +65,19 @@ bool OSCYawImpedanceController::ParseMessage(const FrankaControlMessage &msg) {
   // Eigen::MatrixXd::Identity(3, 3); Kd_r << 2.0 *
   // sqrt(control_msg_.rotational_stiffness()) * Eigen::MatrixXd::Identity(3,
   // 3);
-  static_q_task_ << 0.09017809387254755, -0.9824203501652151,
-      0.030509718397568178, -2.694229634937343, 0.057700675144720104,
-      1.860298714876101, 0.8713759453244422;
+  if (control_msg_.config().null_target().size() != 7) {
+    throw std::invalid_argument(
+        "OSC controller config must specify null_target with 7 values");
+  }
+  std::vector<double> null_target_array;
+  null_target_array.reserve(control_msg_.config().null_target().size());
+  for (double q_i : control_msg_.config().null_target()) {
+    null_target_array.push_back(q_i);
+  }
+  static_q_task_ << Eigen::Map<const Eigen::Matrix<double, 7, 1>>(
+      null_target_array.data());
+  kp_null_ = control_msg_.config().kp_null();
+  kd_null_ = control_msg_.config().kd_null();
 
   std::vector<double> residual_mass_array;
   residual_mass_array.reserve(control_msg_.config().residual_mass_vec().size());
@@ -271,7 +282,8 @@ std::array<double, 7> OSCYawImpedanceController::Step(
   }
 
   // nullspace control
-  tau_d << tau_d + Nullspace * (static_q_task_ - current_q);
+  tau_d << tau_d + Nullspace * (kp_null_ * (static_q_task_ - current_q) -
+                                kd_null_ * current_dq);
   // std::cout << "Nullspace : " << (Nullspace * (static_q_task_ -
   // q)).transpose() << std::endl;
   std::array<double, 7> tau_d_array{};

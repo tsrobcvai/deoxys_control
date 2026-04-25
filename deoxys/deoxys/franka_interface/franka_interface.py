@@ -64,6 +64,16 @@ TRAJ_INTERPOLATOR_MAPPING = {
 }
 
 
+def osc_controller_config_to_msg(controller_cfg):
+    osc_config = franka_controller_pb2.FrankaOSCControllerConfig()
+    osc_config.residual_mass_vec[:] = controller_cfg.residual_mass_vec
+    osc_config.disable_inertial_decoupling = controller_cfg.disable_inertial_decoupling
+    osc_config.kp_null = controller_cfg.kp_null
+    osc_config.kd_null = controller_cfg.kd_null
+    osc_config.null_target[:] = controller_cfg.null_target
+    return osc_config
+
+
 class FrankaInterface:
     """
     This is the Python Interface for communicating with franka interface on NUC.
@@ -278,10 +288,7 @@ class FrankaInterface:
             osc_msg.translational_stiffness[:] = controller_cfg.Kp.translation
             osc_msg.rotational_stiffness[:] = controller_cfg.Kp.rotation
 
-            osc_config = franka_controller_pb2.FrankaOSCControllerConfig()
-
-            osc_config.residual_mass_vec[:] = controller_cfg.residual_mass_vec
-            osc_config.disable_inertial_decoupling = controller_cfg.disable_inertial_decoupling
+            osc_config = osc_controller_config_to_msg(controller_cfg)
             osc_msg.config.CopyFrom(osc_config)
             action[0:3] *= controller_cfg.action_scale.translation
             action[3 : self.last_gripper_dim] *= controller_cfg.action_scale.rotation
@@ -319,9 +326,7 @@ class FrankaInterface:
             osc_msg.translational_stiffness[:] = controller_cfg.Kp.translation
             osc_msg.rotational_stiffness[:] = controller_cfg.Kp.rotation
 
-            osc_config = franka_controller_pb2.FrankaOSCControllerConfig()
-            osc_config.residual_mass_vec[:] = controller_cfg.residual_mass_vec
-            osc_config.disable_inertial_decoupling = controller_cfg.disable_inertial_decoupling
+            osc_config = osc_controller_config_to_msg(controller_cfg)
             osc_msg.config.CopyFrom(osc_config)
 
             action[0:3] *= controller_cfg.action_scale.translation
@@ -357,9 +362,7 @@ class FrankaInterface:
             osc_msg.translational_stiffness[:] = controller_cfg.Kp.translation
             osc_msg.rotational_stiffness[:] = controller_cfg.Kp.rotation
 
-            osc_config = franka_controller_pb2.FrankaOSCControllerConfig()
-            osc_config.residual_mass_vec[:] = controller_cfg.residual_mass_vec
-            osc_config.disable_inertial_decoupling = controller_cfg.disable_inertial_decoupling
+            osc_config = osc_controller_config_to_msg(controller_cfg)
             osc_msg.config.CopyFrom(osc_config)
 
             action[0:3] *= controller_cfg.action_scale.translation

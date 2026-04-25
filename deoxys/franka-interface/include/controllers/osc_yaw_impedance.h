@@ -12,6 +12,8 @@ protected:
   Eigen::Matrix<double, 3, 3> Kp_p, Kp_r, Kd_p, Kd_r;
 
   Eigen::Matrix<double, 7, 1> static_q_task_;
+  double kp_null_;
+  double kd_null_;
 
   Eigen::Vector3d prev_goal_pos_EE_in_base_frame;
 

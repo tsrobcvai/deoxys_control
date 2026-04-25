@@ -52,6 +52,9 @@ message FrankaOSCControllerConfig {
   repeated double residual_mass_vec =
       1; // The manual residual mass matrix to add on the internal mass matrix
   bool disable_inertial_decoupling = 2; // Flag to disable inertial decoupling (default false)
+  double kp_null = 3; // Nullspace position gain
+  double kd_null = 4; // Nullspace damping gain
+  repeated double null_target = 5; // Nullspace joint target
 }
 
 // Franka Gripper control messages
